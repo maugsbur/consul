@@ -197,7 +197,6 @@ en:
       no_city_votes: This Forum has not supported any city investment proposals
       no_district_votes: This Forum has not supported any district investment proposals
       confirm: You have already voted some investment proposals. If you delegate your votes in %{forum}, your votes will be erased and you will vote whatever this forum votes.
->>>>>>> master
   geozones:
     none: All city
   layouts:
