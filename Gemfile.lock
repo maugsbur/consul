@@ -58,6 +58,8 @@ GEM
       nokogiri
     ancestry (2.2.2)
       activerecord (>= 3.0.0)
+    animate-rails (1.0.10)
+      rails
     arel (6.0.3)
     ast (2.3.0)
     babel-source (5.8.35)
@@ -160,7 +162,7 @@ GEM
       i18n (~> 0.5)
     faraday (0.9.2)
       multipart-post (>= 1.2, < 3)
-    foundation-rails (6.2.4.0)
+    foundation-rails (6.2.3.0)
       railties (>= 3.1.0)
       sass (>= 3.3.0, < 3.5)
       sprockets-es6 (>= 0.9.0)
@@ -351,6 +353,7 @@ GEM
       ruby-progressbar (~> 1.7)
       unicode-display_width (~> 1.0, >= 1.0.1)
     ruby-progressbar (1.8.1)
+    rubyzip (1.2.0)
     rvm1-capistrano3 (1.4.0)
       capistrano (~> 3.0)
       sshkit (>= 1.2)
@@ -455,6 +458,7 @@ DEPENDENCIES
   acts_as_votable
   ahoy_matey (~> 1.4.2)
   ancestry (~> 2.2.2)
+  animate-rails
   browser
   bullet
   byebug
@@ -477,7 +481,7 @@ DEPENDENCIES
   email_spec
   factory_girl_rails
   faker
-  foundation-rails (~> 6.2.4.0)
+  foundation-rails (= 6.2.3.0)
   foundation_rails_helper (~> 2.0.0)
   fuubar
   groupdate (~> 3.1.0)
@@ -507,6 +511,7 @@ DEPENDENCIES
   rollbar (~> 2.13.3)
   rspec-rails (~> 3.5)
   rubocop (~> 0.45.0)
+  rubyzip
   rvm1-capistrano3
   sass-rails (~> 5.0, >= 5.0.4)
   savon
@@ -515,6 +520,7 @@ DEPENDENCIES
   spring
   spring-commands-rspec
   sprockets (~> 3.7.0)
+  timecop
   tolk (~> 2.0.0)
   turbolinks
   turnout (~> 2.4.0)
@@ -522,6 +528,3 @@ DEPENDENCIES
   unicorn (~> 5.1.0)
   web-console (= 3.3.0)
   whenever
-
-BUNDLED WITH
-   1.13.6

@@ -1,7 +1,5 @@
 <div class="verification account row">
-  <%track_event(category: "verification", action: "start_census" )%>
   <div class="small-12 column">
-
     <div class="text-center">
       <div class="small-4 column verification-step active">
         <span class="number">1</span> <%= t("verification.step_1") %>
@@ -80,6 +78,12 @@
         <div class="medium-6">
           <%= f.text_field :postal_code, label: false %>
         </div>
+      </div>
+
+      <div class="small-12 medium-5 clear">
+        <%= f.label t("verification.residence.new.redeemable_code") %>
+        <p class="note"><%= t("verification.residence.new.redeemable_code_note") %></p>
+        <%= f.text_field :redeemable_code, label: false %>
       </div>
 
       <div class="small-12">

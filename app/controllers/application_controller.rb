@@ -3,6 +3,7 @@ require "application_responder"
 class ApplicationController < ActionController::Base
   include HasFilters
   include HasOrders
+  include Analytics
 
   before_action :authenticate_http_basic, if: :http_basic_auth_site?
 
@@ -107,6 +108,10 @@ class ApplicationController < ActionController::Base
         campaign = Campaign.where(track_id: params[:track_id]).first
         ahoy.track campaign.name if campaign.present?
       end
+
+      if params[:track_id] == "172943750183759812"
+        session[:track_signup] = true
+      end
     end
 
     def set_return_url
@@ -114,4 +119,5 @@ class ApplicationController < ActionController::Base
         store_location_for(:user, request.path)
       end
     end
+
 end

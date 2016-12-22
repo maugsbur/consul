@@ -27,15 +27,22 @@
         <% end %>
       </div>
 
-      <% if has_banners %>
+      <% if display_budget_countdown? %>
+        <%= render "shared/budget_counter_banner" %>
+      <% end %>
+
+      <% if has_banners? %>
         <%= render "shared/banner" %>
       <% end %>
 
-      <% if @proposal_successfull_exists %>
+
+      <% if feature?("probe.plaza") %>
+        <%= render "custom/probes/plaza/banner" %>
+      <% elsif @proposal_successfull_exists %>
         <%= render "proposals/proposal_ballots_banner" %>
       <% end %>
 
-      <% unless @tag_filter || @search_terms || !has_featured? || @proposal_ballots.present? || @proposal_successfull_exists %>
+      <% unless @tag_filter || @search_terms || !has_featured? || @proposal_ballots.present? || @proposal_successfull_exists || feature?("probe.plaza") %>
         <%= render "featured_debates" %>
       <% end %>
 
@@ -56,6 +63,7 @@
       <aside class="margin-bottom">
         <%= link_to t("debates.index.start_debate"), new_debate_path, class: 'button expanded' %>
         <%= render "shared/tag_cloud", taggable: 'debate' %>
+        <%= render 'popular' %>
       </aside>
     </div>
 

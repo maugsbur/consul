@@ -7,6 +7,8 @@ en:
         debate: "Debate created successfully."
         direct_message: "You message has been sent successfully."
         proposal: "Proposal created successfully."
+        spending_proposal: "Investment project created successfully. You can access it from %{activity}"
+        representative: "You have updated your representative"
         proposal_notification: "Your message has been sent correctly."
         spending_proposal: "Spending proposal created successfully. You can access it from %{activity}"
         signature_sheet: "Signature sheet created successfully"
@@ -19,3 +21,4 @@ en:
         spending_proposal: "Investment project updated succesfully."
       destroy:
         spending_proposal: "Spending proposal deleted succesfully."
+        representative: "You do not have a representative anymore."

@@ -15,6 +15,7 @@ RSpec.configure do |config|
   config.include(EmailSpec::Helpers)
   config.include(EmailSpec::Matchers)
   config.include(CommonActions)
+
   config.before(:suite) do
     DatabaseCleaner.clean_with :truncation
   end

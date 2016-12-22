@@ -14,6 +14,27 @@ module CommonActions
     click_button 'Register'
   end
 
+  def sign_up_as_organization(email="organization@consul.dev", password='thepeoples')
+    visit new_organization_registration_path
+
+    fill_in 'user_organization_attributes_name',  with: 'Greenpeace'
+    fill_in 'user_organization_attributes_responsible_name', with: 'Dorothy Stowe'
+    fill_in 'user_email',                         with: 'green@peace.com'
+    fill_in 'user_password',                      with: 'greenpeace'
+    fill_in 'user_password_confirmation',         with: 'greenpeace'
+    check 'user_terms_of_service'
+
+    click_button 'Register'
+  end
+
+  def fill_in_signup_form(email='manuela@consul.dev', password='judgementday')
+    fill_in 'user_username',              with: "Manuela Carmena #{rand(99999)}"
+    fill_in 'user_email',                 with: email
+    fill_in 'user_password',              with: password
+    fill_in 'user_password_confirmation', with: password
+    check 'user_terms_of_service'
+  end
+
   def login_through_form_as(user)
     visit root_path
     click_link 'Sign in'
@@ -38,6 +59,26 @@ module CommonActions
 
   def login_managed_user(user)
     allow_any_instance_of(Management::BaseController).to receive(:managed_user).and_return(user)
+  end
+
+  def root_path_for_logged_in_users
+    root_path
+  end
+
+  def fill_in_proposal
+    fill_in 'proposal_title', with: 'Help refugees'
+    fill_in 'proposal_summary', with: 'In summary, what we want is...'
+    fill_in 'proposal_description', with: 'This is very important because...'
+    fill_in 'proposal_external_url', with: 'http://rescue.org/refugees'
+    fill_in 'proposal_video_url', with: 'http://youtube.com'
+    fill_in 'proposal_responsible_name', with: 'Isabel Garcia'
+    check 'proposal_terms_of_service'
+  end
+
+  def fill_in_debate
+    fill_in 'debate_title', with: 'A title for a debate'
+    fill_in 'debate_description', with: 'This is very important because...'
+    check 'debate_terms_of_service'
   end
 
   def confirm_email
@@ -156,6 +197,8 @@ module CommonActions
 
   def expect_message_you_need_to_sign_in
     expect(page).to have_content 'You must Sign in or Sign up to continue'
+    expect(page).to have_link("Sign in", href: new_user_session_path)
+    expect(page).to have_link("Sign up", href: new_user_registration_path)
     expect(page).to have_selector('.in-favor', visible: false)
   end
 
@@ -172,7 +215,13 @@ module CommonActions
 
   def expect_message_only_verified_can_vote_proposals
     expect(page).to have_content 'Only verified users can vote on proposals'
+    expect(page).to have_link("verify your account", href: verification_path)
     expect(page).to have_selector('.in-favor', visible: false)
+  end
+
+  def expect_message_organizations_cannot_vote
+    expect(page).to have_content 'Organisations are not permitted to vote.'
+    expect(page).to have_selector('.in-favor a', visible: false)
   end
 
   def expect_message_voting_not_allowed
@@ -180,10 +229,20 @@ module CommonActions
     expect(page).to_not have_selector('.in-favor a')
   end
 
+  def expect_message_already_voted_in_another_geozone(geozone)
+    expect(page).to have_content 'You have already supported other district proposals.'
+    expect(page).to have_link(geozone.name, href: spending_proposals_path(geozone: geozone))
+    expect(page).to have_selector('.in-favor a', visible: false)
+  end
+
+  def expect_message_insufficient_funds
+    expect(page).to have_content "This proposal's price is more than the available amount left"
+    expect(page).to have_selector('.in-favor a', visible: false)
+  end
+
   def create_featured_proposals
     [create(:proposal, :with_confidence_score, cached_votes_up: 100),
-     create(:proposal, :with_confidence_score, cached_votes_up: 90),
-     create(:proposal, :with_confidence_score, cached_votes_up: 80)]
+     create(:proposal, :with_confidence_score, cached_votes_up: 90)]
   end
 
   def create_featured_debates
@@ -204,6 +263,12 @@ module CommonActions
 
   def tag_names(tag_cloud)
     tag_cloud.tags.map(&:name)
+  end
+
+  def add_to_ballot(spending_proposal)
+    within("#spending_proposal_#{spending_proposal.id}") do
+      find('.add a').trigger('click')
+    end
   end
 
   def create_proposal_notification(proposal)
@@ -253,6 +318,50 @@ module CommonActions
       expect(page).to_not have_css ".label.round"
       expect(page).to_not have_content "Employee"
     end
+  end
+
+  def create_spending_proposal_for(*users)
+    users.each do |user|
+      create(:spending_proposal, :finished, :feasible, author: user)
+    end
+  end
+
+  def create_vote_for(*users)
+    sp = first_or_create_spending_spending_proposal
+    users.each do |user|
+      create(:vote, votable: sp, voter: user)
+    end
+  end
+
+  def create_ballot_for(*users)
+    sp = first_or_create_spending_spending_proposal
+    users.each do |user|
+      create(:ballot, spending_proposals: [sp], user: user)
+    end
+  end
+
+  def create_delegation_for(*users)
+    forum = create(:forum)
+    users.each do |user|
+      user.update(representative: forum)
+    end
+  end
+
+  def first_or_create_spending_spending_proposal
+    if SpendingProposal.any?
+      return SpendingProposal.first
+    else
+      return create(:spending_proposal, :finished, :feasible)
+    end
+  end
+
+  def send_user_invite
+    visit new_management_user_invite_path
+
+    fill_in "emails", with: "john@example.com, ana@example.com, isable@example.com"
+    click_button "Send invites"
+
+    expect(page).to have_content "3 invitations have been sent."
   end
 
 end

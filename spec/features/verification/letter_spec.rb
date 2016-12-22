@@ -26,7 +26,7 @@ feature 'Verify Letter' do
     login_as(user)
     visit new_letter_path
 
-    expect(page).to have_link "Citizen Support Offices", href: "http://offices.consul"
+    expect(page).to have_link "Citizen Support Offices", href: "http://www.madrid.es/portales/munimadrid/es/Inicio/El-Ayuntamiento/Atencion-al-ciudadano/Oficinas-de-Atencion-al-Ciudadano?vgnextfmt=default&vgnextchannel=5b99cde2e09a4310VgnVCM1000000b205a0aRCRD"
   end
 
   scenario "Deny access unless verified residence" do
@@ -137,6 +137,49 @@ feature 'Verify Letter' do
 
       expect(page).to have_content "You have reached the maximum number of attempts. Please try again later."
       expect(current_path).to eq(account_path)
+    end
+
+    context "Redeeamble Code" do
+
+      scenario 'Valid reedeamble code' do
+        token = RedeemableCode.generate_token
+        redeemable_code = create(:redeemable_code, token: token)
+
+        user = create(:user, residence_verified_at: Time.now,
+                             confirmed_phone:       "611111111",
+                             geozone:               create(:geozone))
+
+        login_as(user)
+        visit edit_letter_path
+
+        fill_in "verification_letter_email", with: user.email
+        fill_in "verification_letter_password", with: user.password
+        fill_in "verification_letter_verification_code", with: redeemable_code.token
+        click_button "Verify my account"
+
+        expect(page).to have_content "Code correct. Your account is now verified"
+        expect(current_path).to eq(account_path)
+      end
+
+      scenario 'Error message on incorrect reedeamble code' do
+        token = RedeemableCode.generate_token
+        redeemable_code = create(:redeemable_code, token: token)
+
+        user = create(:user, residence_verified_at: Time.now,
+                             confirmed_phone:       "611111111",
+                             geozone:               create(:geozone))
+
+        login_as(user)
+
+        visit edit_letter_path
+        fill_in "verification_letter_email", with: user.email
+        fill_in "verification_letter_password", with: user.password
+        fill_in "verification_letter_verification_code", with: "1234"
+        click_button "Verify my account"
+
+        expect(page).to have_content "Verification code incorrect"
+      end
+
     end
 
   end

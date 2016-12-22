@@ -32,6 +32,7 @@ data:
     - config/locales/devise_views.%{locale}.yml
     - config/locales/responders.%{locale}.yml
     - config/locales/kaminari.%{locale}.yml
+    - config/locales/custom.%{locale}.yml
 
   # Locale files to write new keys to, based on a list of key pattern => file rules. Matched from top to bottom:
   # `i18n-tasks normalize -p` will force move the keys according to these rules
@@ -104,6 +105,10 @@ ignore_missing:
   - 'devise.failure.invalid'
   - 'devise.registrations.destroyed'
   - 'devise.password_expired.*'
+  - 'tracking.events.action.*'
+  - 'tracking.events.category.*'
+  - 'tracking.user_data.*'
+  - 'tracking.events.name.*'
 
 ## Consider these keys used:
 ignore_unused:
@@ -135,8 +140,14 @@ ignore_unused:
   - 'debates.index.search_form.*'
   - 'proposals.index.select_order'
   - 'proposals.index.orders.*'
+  - 'spending_proposals.index.select_order'
+  - 'spending_proposals.index.orders.*'
   - 'proposals.index.search_form.*'
   - 'spending_proposals.index.search_form.*'
+  - 'debates.show.comments*'
+  - 'debates.show.questions*'
+  - 'comments_helper.*'
+  - 'questions_helper.*'
   - 'notifications.index.comments_on*'
   - 'notifications.index.replies_to*'
   - 'notifications.index.proposal_notification*'
@@ -144,6 +155,7 @@ ignore_unused:
   - 'views.pagination.*' # kaminari
   - 'shared.suggest.*'
   - 'invisible_captcha.*'
+  - 'probes.codenames.*' # custom probes names
 # - '{devise,kaminari,will_paginate}.*'
 # - 'simple_form.{yes,no}'
 # - 'simple_form.{placeholders,hints,labels}.*'

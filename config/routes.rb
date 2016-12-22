@@ -45,6 +45,8 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :answers, only: [:index, :new, :create]
+
   resources :proposals do
     member do
       post :vote
@@ -72,9 +74,20 @@ Rails.application.routes.draw do
   end
 
   scope '/participatory_budget' do
-    resources :spending_proposals, only: [:index, :new, :create, :show, :destroy], path: 'investment_projects' do
+    resources :spending_proposals, only: [:index, :show, :destroy], path: 'investment_projects' do #[:new, :create] temporary disabled
+      get :welcome, on: :collection
+      get :stats, on: :collection
       post :vote, on: :member
     end
+
+    resource :ballot, only: [:show] do
+      resources :ballot_lines, only: [:create, :destroy], shallow: true
+    end
+
+  end
+
+  resources :open_plenaries, only: [] do
+    get :results, on: :collection
   end
 
   resources :stats, only: [:index]
@@ -108,6 +121,7 @@ Rails.application.routes.draw do
     resource :email, controller: "email", only: [:new, :show, :create]
     resource :letter, controller: "letter", only: [:new, :create, :show, :edit, :update]
   end
+  get "/verifica", to: "verification/letter#edit"
 
   namespace :admin do
     root to: "dashboard#index"
@@ -147,9 +161,11 @@ Rails.application.routes.draw do
       end
 
       get :summary, on: :collection
+      get :results, on: :collection
     end
 
     resources :signature_sheets, only: [:index, :new, :create, :show]
+    resources :probes, only: [:index, :show]
 
     resources :banners, only: [:index, :new, :create, :edit, :update, :destroy] do
       collection { get :search}
@@ -186,9 +202,17 @@ Rails.application.routes.draw do
     end
 
     resource :activity, controller: :activity, only: :show
+    resources :newsletters, only: :index do
+      get :users, on: :collection
+    end
+
     resource :stats, only: :show do
+      get :spending_proposals, on: :collection
+      get :graph, on: :member
       get :proposal_notifications, on: :collection
       get :direct_messages, on: :collection
+      get :redeemable_codes, on: :collection
+      get :user_invites, on: :collection
     end
 
     namespace :api do
@@ -260,10 +284,30 @@ Rails.application.routes.draw do
       get :print, on: :collection
     end
 
-    resources :spending_proposals, only: [:index, :new, :create, :show] do
+    resources :spending_proposals, only: [:index, :show] do #[:new, :create] temporary disabled
       post :vote, on: :member
       get :print, on: :collection
     end
+
+  end
+
+  resources :forums, only: [:index, :create, :show]
+  resources :representatives, only: [:create, :destroy]
+
+  resources :probes, only: [:show] do
+    post :selection,  on: :collection
+    get :thanks, on: :collection
+
+    resources :probe_options, only: :show do
+      post :discard, on: :member
+      post :restore_discarded, on: :collection
+    end
+  end
+
+  resources :human_rights, only: [:index, :show]
+
+  resource :volunteer_poll, only: [:new, :create] do
+    get :thanks, on: :collection
   end
 
   if Rails.env.development?
@@ -272,7 +316,52 @@ Rails.application.routes.draw do
 
   mount Tolk::Engine => '/translate', :as => 'tolk'
 
-  # static pages
-  get '/blog' => redirect("http://blog.consul/")
+  get 'voluntarios-mesas-presenciales' => redirect('/volunteer_poll/new')
+  get 'encuesta-plaza-espana' => redirect('/encuesta-plaza-espana-resultados')
+  get '/blog' => redirect('http://diario.madrid.es/participa/')
+  get 'participatory_budget', to: 'spending_proposals#welcome', as: 'participatory_budget'
+  get 'participatory_budget/select_district', to: 'spending_proposals#select_district', as: 'select_district'
+  get 'delegacion', to: 'forums#index', as: 'delegation'
+  get 'plenoabierto', to: 'pages#show', id: 'processes_open_plenary'
+  get 'noticias', to: 'pages#show', id: 'news'
+  get 'participatory_budget/in_two_minutes', to: 'pages#show', id: 'participatory_budget/in_two_minutes'
+
+  get 'presupuestos-participativos-resultados', to: 'spending_proposals#results', as: 'participatory_budget_results'
+  get 'presupuestos-participativos-estadisticas', to: 'spending_proposals#stats', as: 'participatory_budget_stats'
+  get 'vota', to: 'proposal_ballots#index', as: 'proposal_ballots_index'
+
+  #Probes
+  get 'processes/urbanismo-bancos', to: 'probes#show', id: 'town_planning', as: 'town_planning'
+  get 'processes/urbanismo-bancos-gracias', to: 'probes#thanks', id: 'town_planning', as: 'town_planning_thanks'
+  get 'proceso/plaza-espana-resultados', to: 'probes#show', id: 'plaza', as: 'plaza'
+  get 'proceso/plaza-espana',            to: 'probes#show', id: 'plaza'
+  get 'proceso/plaza-espana-gracias', to: 'probes#thanks', id: 'plaza', as: 'plaza_thanks'
+  get 'proceso/plaza-espana/proyectos/:id', to: 'probe_options#show', probe_id: 'plaza', as: 'plaza_probe_option'
+
+  get 'proceso/plaza-espana-informacion',  to: 'pages#show',   id: 'processes_plaza_espana',            as: 'remodeling_plaza'
+  get 'proceso/plaza-espana-estadisticas', to: 'pages#show',   id: 'encuesta-plaza-espana-resultados',  as: 'survey_plaza'
+
+  #Human Rights
+  get 'derechos-humanos',                  to: 'pages#show', id: 'processes/human_rights',      as: 'human_rights_page'
+  get 'derechos-humanos/plan',             to: 'pages#show', id: 'processes/human_rights_plan', as: 'human_rights_plan'
+  get 'derechos-humanos/medidas',          to: 'human_rights#index',                            as: 'human_rights_proposals'
+  get 'derechos-humanos/medidas/:id',      to: 'human_rights#show',                             as: 'human_rights_proposal'
+
+  get 'processes/human_rights_question_1', to: 'pages#show', id: 'processes/human_rights_question_1'
+  get 'processes/human_rights_question_2', to: 'pages#show', id: 'processes/human_rights_question_2'
+  get 'processes/human_rights_question_3', to: 'pages#show', id: 'processes/human_rights_question_3'
+
+  #Processes
+  get 'procesos',                                   to: 'pages#show', id: 'processes',                        as: 'processes'
+  get 'proceso/licencias-urbanisticas',             to: 'pages#show', id: 'processes/urbanistic_licenses',    as: 'urbanistic_licenses'
+  get 'proceso/alianza-gobierno-abierto',           to: 'pages#show', id: 'processes/open_government',        as: 'open_government'
+  get 'proceso/alianza-gobierno-abierto-borrador',  to: 'pages#show', id: 'processes/open_government_doc',    as: 'open_government_doc'
+  get 'proceso/ordenanza-subvenciones',             to: 'pages#show', id: 'processes/subvention_ordinance',   as: 'subvention_ordinance'
+  get 'proceso/plan-calidad-aire',                  to: 'pages#show', id: 'processes/air_quality_plan/index', as: 'air_quality_plan'
+  get 'proceso/rotulacion-vias',                    to: 'pages#show', id: 'processes/label_streets/index',    as: 'label_streets'
+
+  #Campaña Blas Bonilla
+  get 'haz-propuestas',                             to: 'pages#show', id: 'blas_bonilla', as: 'blas_bonilla'
+
   resources :pages, path: '/', only: [:show]
 end

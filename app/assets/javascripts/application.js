@@ -14,6 +14,7 @@
 //= require jquery_ujs
 //= require jquery-ui/datepicker
 //= require jquery-ui/datepicker-es
+//= require jquery-ui/effect-shake
 //= require foundation
 //= require turbolinks
 //= require ckeditor/loader
@@ -39,12 +40,16 @@
 //= require annotatable
 //= require advanced_search
 //= require registration_form
+//= require forms
 //= require suggest
 //= require forms
 //= require tracks
 //= require valuation_spending_proposal_form
 //= require embed_video
+//= require fixed_bar
 //= require banners
+//= require countdown
+//= require probe
 //= require social_share
 //= require custom
 
@@ -66,7 +71,9 @@ var initialize_modules = function() {
   App.Tracks.initialize();
   App.ValuationSpendingProposalForm.initialize();
   App.EmbedVideo.initialize();
+  App.FixedBar.initialize();
   App.Banners.initialize();
+  App.Countdown.initialize();
   App.SocialShare.initialize();
 };
 

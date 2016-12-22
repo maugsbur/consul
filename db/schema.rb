@@ -63,6 +63,36 @@ ActiveRecord::Schema.define(version: 20161221151239) do
   add_index "annotations", ["legislation_id"], name: "index_annotations_on_legislation_id", using: :btree
   add_index "annotations", ["user_id"], name: "index_annotations_on_user_id", using: :btree
 
+  create_table "answers", force: :cascade do |t|
+    t.integer  "author_id"
+    t.text     "text"
+    t.string   "context"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "answers", ["author_id"], name: "index_answers_on_author_id", using: :btree
+  add_index "answers", ["context"], name: "index_answers_on_context", using: :btree
+
+  create_table "ballot_lines", force: :cascade do |t|
+    t.integer  "ballot_id"
+    t.integer  "spending_proposal_id"
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
+  end
+
+  add_index "ballot_lines", ["ballot_id", "spending_proposal_id"], name: "index_ballot_lines_on_ballot_id_and_spending_proposal_id", unique: true, using: :btree
+  add_index "ballot_lines", ["spending_proposal_id"], name: "index_ballot_lines_on_spending_proposal_id", using: :btree
+
+  create_table "ballots", force: :cascade do |t|
+    t.integer  "user_id"
+    t.datetime "created_at",                     null: false
+    t.datetime "updated_at",                     null: false
+    t.datetime "confirmed_at"
+    t.integer  "geozone_id"
+    t.integer  "ballot_lines_count", default: 0
+  end
+
   create_table "banners", force: :cascade do |t|
     t.string   "title",           limit: 80
     t.string   "description"
@@ -118,8 +148,8 @@ ActiveRecord::Schema.define(version: 20161221151239) do
     t.string   "title",                        limit: 80
     t.text     "description"
     t.integer  "author_id"
-    t.datetime "created_at",                                          null: false
-    t.datetime "updated_at",                                          null: false
+    t.datetime "created_at",                                                  null: false
+    t.datetime "updated_at",                                                  null: false
     t.string   "visit_id"
     t.datetime "hidden_at"
     t.integer  "flags_count",                             default: 0
@@ -136,6 +166,7 @@ ActiveRecord::Schema.define(version: 20161221151239) do
     t.integer  "geozone_id"
     t.tsvector "tsv"
     t.datetime "featured_at"
+    t.string   "comment_kind",                            default: "comment"
   end
 
   add_index "debates", ["author_id", "hidden_at"], name: "index_debates_on_author_id_and_hidden_at", using: :btree
@@ -200,6 +231,13 @@ ActiveRecord::Schema.define(version: 20161221151239) do
   add_index "flags", ["flaggable_type", "flaggable_id"], name: "index_flags_on_flaggable_type_and_flaggable_id", using: :btree
   add_index "flags", ["user_id", "flaggable_type", "flaggable_id"], name: "access_inappropiate_flags", using: :btree
   add_index "flags", ["user_id"], name: "index_flags_on_user_id", using: :btree
+
+  create_table "forums", force: :cascade do |t|
+    t.string   "name"
+    t.integer  "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "geozones", force: :cascade do |t|
     t.string   "name"
@@ -269,6 +307,38 @@ ActiveRecord::Schema.define(version: 20161221151239) do
 
   add_index "organizations", ["user_id"], name: "index_organizations_on_user_id", using: :btree
 
+  create_table "probe_options", force: :cascade do |t|
+    t.string  "code"
+    t.string  "name"
+    t.integer "probe_id"
+    t.integer "probe_selections_count", default: 0
+    t.integer "debate_id"
+    t.integer "comments_count",         default: 0, null: false
+  end
+
+  add_index "probe_options", ["debate_id"], name: "index_probe_options_on_debate_id", using: :btree
+
+  create_table "probe_selections", force: :cascade do |t|
+    t.integer  "probe_id"
+    t.integer  "probe_option_id"
+    t.integer  "user_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "probe_selections", ["probe_id"], name: "index_probe_selections_on_probe_id", using: :btree
+  add_index "probe_selections", ["probe_option_id"], name: "index_probe_selections_on_probe_option_id", using: :btree
+  add_index "probe_selections", ["user_id"], name: "index_probe_selections_on_user_id", using: :btree
+
+  create_table "probes", force: :cascade do |t|
+    t.string   "codename"
+    t.boolean  "selecting_allowed", default: true
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "probes", ["codename"], name: "index_probes_on_codename", using: :btree
+
   create_table "proposal_notifications", force: :cascade do |t|
     t.string   "title"
     t.text     "body"
@@ -303,6 +373,8 @@ ActiveRecord::Schema.define(version: 20161221151239) do
     t.datetime "retired_at"
     t.string   "retired_reason"
     t.text     "retired_explanation"
+    t.string   "proceeding"
+    t.string   "sub_proceeding"
   end
 
   add_index "proposals", ["author_id", "hidden_at"], name: "index_proposals_on_author_id_and_hidden_at", using: :btree
@@ -312,10 +384,20 @@ ActiveRecord::Schema.define(version: 20161221151239) do
   add_index "proposals", ["geozone_id"], name: "index_proposals_on_geozone_id", using: :btree
   add_index "proposals", ["hidden_at"], name: "index_proposals_on_hidden_at", using: :btree
   add_index "proposals", ["hot_score"], name: "index_proposals_on_hot_score", using: :btree
+  add_index "proposals", ["proceeding"], name: "index_proposals_on_proceeding", using: :btree
   add_index "proposals", ["question"], name: "index_proposals_on_question", using: :btree
+  add_index "proposals", ["sub_proceeding"], name: "index_proposals_on_sub_proceeding", using: :btree
   add_index "proposals", ["summary"], name: "index_proposals_on_summary", using: :btree
   add_index "proposals", ["title"], name: "index_proposals_on_title", using: :btree
   add_index "proposals", ["tsv"], name: "index_proposals_on_tsv", using: :gin
+
+  create_table "redeemable_codes", force: :cascade do |t|
+    t.string   "token"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "redeemable_codes", ["token"], name: "index_redeemable_codes_on_token", using: :btree
 
   create_table "settings", force: :cascade do |t|
     t.string "key"
@@ -366,8 +448,14 @@ ActiveRecord::Schema.define(version: 20161221151239) do
     t.datetime "unfeasible_email_sent_at"
     t.integer  "cached_votes_up",                        default: 0
     t.tsvector "tsv"
+    t.integer  "comments_count",                         default: 0
+    t.datetime "hidden_at"
+    t.integer  "confidence_score",                       default: 0,     null: false
+    t.boolean  "forum",                                  default: false
     t.string   "responsible_name",            limit: 60
     t.integer  "physical_votes",                         default: 0
+    t.integer  "ballot_lines_count",                     default: 0
+    t.boolean  "compatible",                             default: true
   end
 
   add_index "spending_proposals", ["author_id"], name: "index_spending_proposals_on_author_id", using: :btree
@@ -429,30 +517,30 @@ ActiveRecord::Schema.define(version: 20161221151239) do
   add_index "tolk_translations", ["phrase_id", "locale_id"], name: "index_tolk_translations_on_phrase_id_and_locale_id", unique: true, using: :btree
 
   create_table "users", force: :cascade do |t|
-    t.string   "email",                                     default: ""
-    t.string   "encrypted_password",                        default: "",                    null: false
+    t.string   "email",                                                       default: ""
+    t.string   "encrypted_password",                                          default: "",                    null: false
     t.string   "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
-    t.integer  "sign_in_count",                             default: 0,                     null: false
+    t.integer  "sign_in_count",                                               default: 0,                     null: false
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip"
     t.string   "last_sign_in_ip"
-    t.datetime "created_at",                                                                null: false
-    t.datetime "updated_at",                                                                null: false
+    t.datetime "created_at",                                                                                  null: false
+    t.datetime "updated_at",                                                                                  null: false
     t.string   "confirmation_token"
     t.datetime "confirmed_at"
     t.datetime "confirmation_sent_at"
     t.string   "unconfirmed_email"
-    t.boolean  "email_on_comment",                          default: false
-    t.boolean  "email_on_comment_reply",                    default: false
-    t.string   "phone_number",                   limit: 30
+    t.boolean  "email_on_comment",                                            default: false
+    t.boolean  "email_on_comment_reply",                                      default: false
+    t.string   "phone_number",                                     limit: 30
     t.string   "official_position"
-    t.integer  "official_level",                            default: 0
+    t.integer  "official_level",                                              default: 0
     t.datetime "hidden_at"
     t.string   "sms_confirmation_code"
-    t.string   "username",                       limit: 60
+    t.string   "username",                                         limit: 60
     t.string   "document_number"
     t.string   "document_type"
     t.datetime "residence_verified_at"
@@ -463,19 +551,24 @@ ActiveRecord::Schema.define(version: 20161221151239) do
     t.datetime "letter_requested_at"
     t.datetime "confirmed_hide_at"
     t.string   "letter_verification_code"
-    t.integer  "failed_census_calls_count",                 default: 0
+    t.integer  "failed_census_calls_count",                                   default: 0
     t.datetime "level_two_verified_at"
     t.string   "erase_reason"
     t.datetime "erased_at"
-    t.boolean  "public_activity",                           default: true
-    t.boolean  "newsletter",                                default: true
-    t.integer  "notifications_count",                       default: 0
-    t.boolean  "registering_with_oauth",                    default: false
+    t.boolean  "public_activity",                                             default: true
+    t.boolean  "newsletter",                                                  default: true
+    t.integer  "notifications_count",                                         default: 0
+    t.boolean  "registering_with_oauth",                                      default: false
     t.string   "locale"
     t.string   "oauth_email"
     t.integer  "geozone_id"
     t.string   "redeemable_code"
-    t.string   "gender",                         limit: 10
+    t.integer  "district_wide_spending_proposals_supported_count",            default: 10
+    t.integer  "city_wide_spending_proposals_supported_count",                default: 10
+    t.integer  "supported_spending_proposals_geozone_id"
+    t.integer  "representative_id"
+    t.boolean  "accepted_delegation_alert",                                   default: false
+    t.string   "gender",                                           limit: 10
     t.datetime "date_of_birth"
     t.boolean  "email_on_proposal_notification",            default: true
     t.boolean  "email_digest",                              default: true
@@ -552,6 +645,35 @@ ActiveRecord::Schema.define(version: 20161221151239) do
   add_index "visits", ["started_at"], name: "index_visits_on_started_at", using: :btree
   add_index "visits", ["user_id"], name: "index_visits_on_user_id", using: :btree
 
+  create_table "volunteer_polls", force: :cascade do |t|
+    t.string  "email"
+    t.string  "availability_week"
+    t.string  "availability_weekend"
+    t.string  "turns"
+    t.boolean "any_district"
+    t.boolean "arganzuela"
+    t.boolean "barajas"
+    t.boolean "carabanchel"
+    t.boolean "centro"
+    t.boolean "chamartin"
+    t.boolean "chamberi"
+    t.boolean "ciudad_lineal"
+    t.boolean "fuencarral_el_pardo"
+    t.boolean "hortaleza"
+    t.boolean "latina"
+    t.boolean "moncloa_aravaca"
+    t.boolean "moratalaz"
+    t.boolean "puente_de_vallecas"
+    t.boolean "retiro"
+    t.boolean "salamanca"
+    t.boolean "san_blas_canillejas"
+    t.boolean "tetuan"
+    t.boolean "usera"
+    t.boolean "vicalvaro"
+    t.boolean "villa_de_vallecas"
+    t.boolean "villaverde"
+  end
+
   create_table "votes", force: :cascade do |t|
     t.integer  "votable_id"
     t.string   "votable_type"
@@ -580,6 +702,7 @@ ActiveRecord::Schema.define(version: 20161221151239) do
   add_foreign_key "moderators", "users"
   add_foreign_key "notifications", "users"
   add_foreign_key "organizations", "users"
+  add_foreign_key "probe_options", "debates"
   add_foreign_key "users", "geozones"
   add_foreign_key "valuators", "users"
 end

@@ -97,6 +97,7 @@ FactoryGirl.define do
   factory :debate do
     sequence(:title)     { |n| "Debate #{n} title" }
     description          'Debate description'
+    comment_kind         'comment'
     terms_of_service     '1'
     association :author, factory: :user
 
@@ -181,15 +182,40 @@ FactoryGirl.define do
         4.times { create(:vote, votable: debate) }
       end
     end
+
+    trait :human_rights do
+      proceeding     "Derechos Humanos"
+      sub_proceeding "Derecho a la vida"
+    end
+  end
+
+  factory :redeemable_code do
+    sequence(:token) { |n| "token#{n}" }
   end
 
   factory :spending_proposal do
     sequence(:title)     { |n| "Spending Proposal #{n} title" }
     description          'Spend money on this'
-    feasible_explanation 'This proposal is not viable because...'
+    feasible_explanation 'This proposal is viable because...'
     external_url         'http://external_documention.org'
     terms_of_service     '1'
     association :author, factory: :user
+
+    trait :with_confidence_score do
+      before(:save) { |sp| sp.calculate_confidence_score }
+    end
+
+    trait :feasible do
+      feasible true
+    end
+
+    trait :unfeasible do
+      feasible false
+    end
+
+    trait :finished do
+      valuation_finished true
+    end
   end
 
   factory :vote do
@@ -242,7 +268,7 @@ FactoryGirl.define do
   factory :annotation do
     quote "ipsum"
     text "Loremp ipsum dolor"
-    ranges [{"start"=>"/div[1]", "startOffset"=>5, "end"=>"/div[1]", "endOffset"=>10}]
+    ranges [{"start"=>"/span[1]", "startOffset"=>1, "end"=>"/span[1]", "endOffset"=>5}]
     legislation
     user
   end
@@ -315,10 +341,34 @@ FactoryGirl.define do
     association :notifiable, factory: :proposal
   end
 
+  factory :probe do
+    sequence(:codename) { |n| "probe_#{n}" }
+  end
+
+  factory :probe_option do
+    probe
+    sequence(:name) { |n| "Probe option #{n}" }
+    sequence(:code) { |n| "probe_option_#{n}" }
+  end
+
   factory :geozone do
     sequence(:name) { |n| "District #{n}" }
     sequence(:external_code) { |n| "#{n}" }
     sequence(:census_code) { |n| "#{n}" }
+  end
+
+  factory :forum do
+    sequence(:name) { |n| "Forum #{n}" }
+    user
+  end
+
+  factory :ballot do
+    user
+  end
+
+  factory :ballot_line do
+    ballot
+    spending_proposal { FactoryGirl.build(:spending_proposal, feasible: true) }
   end
 
   factory :banner do
@@ -354,4 +404,5 @@ FactoryGirl.define do
     signature_sheet
     sequence(:document_number) { |n| "#{n}A" }
   end
+
 end

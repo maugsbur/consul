@@ -1,0 +1,55 @@
+---
+en:
+  admin:
+    probes:
+      index:
+        title: Probes
+        no_results: No probes created
+        status:
+          selecting: Selecting
+          results: Results published
+      show:
+        option: Option
+        selects: Votes
+  probes:
+    codenames:
+      town_planning: 'Town planning - Benches'
+      plaza: 'Remodeling of the Plaza España'
+    verified_only: To participate in this process you need to %{verify_account}
+    verify_account: verify your account
+    not_logged_in: You must %{signin} or %{signup} to participate.
+    signin: Sign in
+    signup: Sign up
+    plaza_banner:
+      title: '#RemodelingPlazaEspaña'
+      date_html: 'Participate until <u>October 28</u>!'
+    plaza:
+      selecting:
+        code_html: '<abbr title="Reference">REF.</abbr> %{code}'
+    back: "Back to list"
+    show:
+      vote: "Vote"
+      documents: "Documents"
+      share: "Share"
+      button: "Vote"
+      code_html: '<abbr title="Reference">REF.</abbr> %{code}'
+  human_rights:
+    banner:
+      title: "#HumanRightsPlan"
+      text_html: "Participate until <u>November 4</u>!"
+  cards:
+    air_quality_plan:
+      title_html: "#DraftAirQuality<br>andClimateChangePlan"
+      text: "Information and communication of the measures proposed in the draft of the new air quality and climate change plan of the city of Madrid."
+      date_html: "Participate until <strong>March</strong>"
+      button: "More information"
+    proposal_ballots:
+      title: "#NextVoting"
+      text: "New proposals that have reached the voting phase."
+      date_html: "<strong>From 13th to 19th of February</strong>"
+      button: "I want to decide"
+    plaza:
+      title: "#RemodelingPlazaEspaña"
+      text: "The preselection of the projects is over. You can already see the results."
+      date_html: "Results are <strong>available</strong>"
+      button: "See results"

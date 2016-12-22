@@ -18,7 +18,7 @@ module Abilities
       end
       can [:retire_form, :retire], Proposal, author_id: user.id
 
-      can :read, SpendingProposal
+      can [:read, :welcome], SpendingProposal
 
       can :create, Comment
       can :create, Debate
@@ -46,12 +46,22 @@ module Abilities
         can :vote_featured, Proposal
         can :vote, SpendingProposal
         can :create, SpendingProposal
+        can :show, Ballot
+        if Setting["feature.spending_proposal_features.final_voting_allowed"].present?
+          can [:create, :destroy], BallotLine
+        end
         can :create, DirectMessage
         can :show, DirectMessage, sender_id: user.id
       end
 
       can [:create, :show], ProposalNotification, proposal: { author_id: user.id }
 
+      if user.forum?
+        can :vote, SpendingProposal
+        can [:create, :destroy], BallotLine
+      end
+
+      can [:create, :read], Answer
       can :create, Annotation
       can [:update, :destroy], Annotation, user_id: user.id
     end

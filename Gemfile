@@ -6,6 +6,7 @@ gem 'rails', '4.2.7.1'
 gem 'pg', '~> 0.19.0'
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 5.0', '>= 5.0.4'
+gem "animate-rails"
 # Use Uglifier as compressor for JavaScript assets
 gem 'uglifier', '>= 3.0.4'
 # Use CoffeeScript for .coffee assets and views
@@ -35,7 +36,7 @@ gem 'kaminari'
 gem 'ancestry', '~> 2.2.2'
 gem 'acts-as-taggable-on'
 gem 'responders', '~> 2.3.0'
-gem 'foundation-rails', '~> 6.2.4.0'
+gem 'foundation-rails', '6.2.3.0'
 gem 'foundation_rails_helper', '~> 2.0.0'
 gem 'acts_as_votable'
 gem 'ckeditor', '~> 4.2.0'
@@ -64,6 +65,7 @@ gem 'tolk', '~> 2.0.0' # Web interface for translations
 gem 'browser'
 gem 'turnout', '~> 2.4.0'
 gem 'redcarpet'
+gem 'rubyzip'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
@@ -95,6 +97,7 @@ group :test do
   gem 'poltergeist'
   gem 'coveralls', require: false
   gem 'email_spec'
+  gem 'timecop'
 end
 
 group :development do
