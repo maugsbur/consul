@@ -292,6 +292,8 @@ GEM
       rack (>= 0.4)
     rack-attack (5.0.1)
       rack
+    rack-protection (1.5.3)
+      rack
     rack-test (0.6.3)
       rack (>= 1.0)
     rails (4.2.7.1)
@@ -322,6 +324,7 @@ GEM
     raindrops (0.17.0)
     rake (12.0.0)
     redcarpet (3.3.4)
+    redis (3.3.2)
     referer-parser (0.3.0)
     request_store (1.3.1)
     responders (2.3.0)
@@ -375,16 +378,25 @@ GEM
       nokogiri (>= 1.4.0)
       nori (~> 2.4)
       wasabi (~> 3.4)
+    simple-random (1.0.3)
     simplecov (0.12.0)
       docile (~> 1.1.0)
       json (>= 1.8, < 3)
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.0)
+    sinatra (1.4.7)
+      rack (~> 1.5)
+      rack-protection (~> 1.4)
+      tilt (>= 1.3, < 3)
     sitemap_generator (5.2.0)
       builder (~> 3.0)
     social-share-button (0.3.1)
       coffee-rails
       sass-rails
+    split (2.2.0)
+      redis (>= 2.1)
+      simple-random (>= 0.9.3)
+      sinatra (>= 1.2.6)
     spring (1.7.2)
     spring-commands-rspec (1.0.4)
       spring (>= 0.9.1)
@@ -506,6 +518,7 @@ DEPENDENCIES
   quiet_assets
   rails (= 4.2.7.1)
   redcarpet
+  redis
   responders (~> 2.3.0)
   rinku (~> 2.0.2)
   rollbar (~> 2.13.3)
@@ -517,6 +530,7 @@ DEPENDENCIES
   savon
   sitemap_generator
   social-share-button
+  split
   spring
   spring-commands-rspec
   sprockets (~> 3.7.0)
@@ -528,3 +542,6 @@ DEPENDENCIES
   unicorn (~> 5.1.0)
   web-console (= 3.3.0)
   whenever
+
+BUNDLED WITH
+   1.13.6

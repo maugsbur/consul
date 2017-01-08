@@ -15,6 +15,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
     track_event
     if resource.valid?
       log_event("registration", "successful_registration", campaign_name)
+      ab_finished(:vota)
       super
     else
       render :new

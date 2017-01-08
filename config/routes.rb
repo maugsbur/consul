@@ -363,5 +363,6 @@ Rails.application.routes.draw do
   #Campaña Blas Bonilla
   get 'haz-propuestas',                             to: 'pages#show', id: 'blas_bonilla', as: 'blas_bonilla'
 
+  mount Split::Dashboard, at: 'split'
   resources :pages, path: '/', only: [:show]
 end
