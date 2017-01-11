@@ -43,8 +43,6 @@ describe "Abilities::Common" do
   it { should_not be_able_to(:vote, SpendingProposal) }
   it { should_not be_able_to(:destroy, SpendingProposal) }
 
-  it { should_not be_able_to(:show, Ballot) }
-
   it { should_not be_able_to(:comment_as_administrator, debate) }
   it { should_not be_able_to(:comment_as_moderator, debate) }
   it { should_not be_able_to(:comment_as_administrator, proposal) }
@@ -112,22 +110,8 @@ describe "Abilities::Common" do
     it { should be_able_to(:create, SpendingProposal) }
     it { should be_able_to(:vote, SpendingProposal) }
 
-    describe "final voting allowed" do
-      before { Setting["feature.spending_proposal_features.final_voting_allowed"] = true }
-      it { should be_able_to(:create, BallotLine) }
-      it { should be_able_to(:destroy, BallotLine) }
-    end
-
-    describe "final voting not allowed" do
-      before { Setting["feature.spending_proposal_features.final_voting_allowed"] = false }
-      it { should_not be_able_to(:create, BallotLine) }
-      it { should_not be_able_to(:destroy, BallotLine) }
-    end
-
     it { should_not be_able_to(:destroy, spending_proposal) }
     it { should_not be_able_to(:destroy, own_spending_proposal) }
-
-    it { should be_able_to(:show, Ballot) }
 
     it { should be_able_to(:create, investment_in_accepting_budget) }
     it { should_not be_able_to(:create, investment_in_selecting_budget) }
@@ -159,13 +143,9 @@ describe "Abilities::Common" do
     it { should be_able_to(:create, SpendingProposal) }
     it { should be_able_to(:vote, SpendingProposal) }
 
-    it { should be_able_to(:create, BallotLine) }
-    it { should be_able_to(:destroy, BallotLine) }
-
     it { should_not be_able_to(:destroy, spending_proposal) }
     it { should_not be_able_to(:destroy, own_spending_proposal) }
 
-    it { should be_able_to(:show, Ballot) }
     it { should be_able_to(:new, DirectMessage) }
     it { should be_able_to(:create, DirectMessage) }
     it { should be_able_to(:show, own_direct_message) }
@@ -184,9 +164,6 @@ describe "Abilities::Common" do
     it { should_not be_able_to(:create, SpendingProposal) }
 
     it { should be_able_to(:vote, SpendingProposal) }
-
-    it { should be_able_to(:create, BallotLine) }
-    it { should be_able_to(:destroy, BallotLine) }
 
     it { should_not be_able_to(:destroy, spending_proposal) }
     it { should_not be_able_to(:destroy, own_spending_proposal) }
