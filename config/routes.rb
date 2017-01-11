@@ -90,10 +90,6 @@ Rails.application.routes.draw do
       post :vote, on: :member
     end
 
-    resource :ballot, only: [:show] do
-      resources :ballot_lines, only: [:create, :destroy], shallow: true
-    end
-
   end
 
   resources :open_plenaries, only: [] do
@@ -229,7 +225,6 @@ Rails.application.routes.draw do
     end
 
     resource :stats, only: :show do
-      get :spending_proposals, on: :collection
       get :graph, on: :member
       get :proposal_notifications, on: :collection
       get :direct_messages, on: :collection
